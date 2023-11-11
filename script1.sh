@@ -1,20 +1,18 @@
 #!/bin/bash
 
+truncate -s 0 pids.txt
 counter=0
 
-function_sleep() {
-	echo "Running PID $!"
-	sleep 3
-}
+echo "Start..."
 
 for i in {1..8}
 	do
-	function_sleep &
+	sleep 1000 &
 	((counter++))
-	echo "Count of processes $counter" > res.txt
+	echo $! >> pids.txt
+	echo "Processes counter: $counter"
+	echo "$counter" > res.txt
 	done
 
-jobs
-sleep 15
-echo "Done!"
-jobs
+sleep 3600
+echo "...End"
