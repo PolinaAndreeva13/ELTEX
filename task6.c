@@ -59,7 +59,7 @@ void save(struct student *save_student, int new_count, int flag, const char *pat
         if (flag == 1){
 
 		FILE *pfile;
-                pfile = fopen(path, "r+");
+                pfile = fopen(path, "w");
 		fprintf(pfile, "%s %d %s %s\n", save_student[new_count].Surname, save_student[new_count].RecordBookNum, save_student[new_count].Faculty, save_student[new_count].Group);
         
  		fclose(pfile);
@@ -148,7 +148,7 @@ void print_table(const char *path){
                 return;
         }
 
-        printf("| %-17s | %-15s | %-15s | %-10s |\n", "Surname student", "Record book number", "Faculty", "Group");
+        printf("|%-17s | %-15s | %-15s | %-10s |\n", "Surname student", "Record book number", "Faculty", "Group");
         printf("|--------------------------------------------------------------------------|\n");
 
         struct student student_view;
@@ -173,9 +173,10 @@ void delete_student(struct student *all_students, int count_student, const char*
 
         for(int i = 0; i < count_student; i++){
 
-                if (strcmp(all_students[i].Surname,surname) == 0){
-
-                                index_del = i;
+                if (strcmp(all_students[i].Surname, surname) == 0){
+			
+			index_del = i;
+			break;
                 }
 
         }
@@ -196,20 +197,81 @@ void delete_student(struct student *all_students, int count_student, const char*
 
         /*for(int i = 0; i < count_student - 1; i++){
 
-                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", new_students[i].Surname, new_students[i].RecordBookNum, new_students[i].Faculty, new_students[i].Group);
 
 
         }*/
 
-	/*FILE *pfile = fopen(path, "w");
+	/*FILE *pfile = fopen(path, "w+");
 
-	fprintf(pfile, "%s %d %s %s\n", all_students[count_student-1].Surname, all_students[count_student-1].RecordBookNum, all_students[count_student-1].Faculty, all_students[count_student-1].Group);
+	fprintf(pfile, "%s %d %s %s\n", new_students[count_student-1].Surname, new_students[count_student-1].RecordBookNum, new_students[count_student-1].Faculty, new_students[count_student-1].Group);
 
         fclose(pfile);*/
         
-	save(all_students, count_student - 1, 1, path);
+//	save(new_students, count_student - 1, 1, path);
 
         //printf("The deletion was completed successfully");
+
+}
+
+void edit(struct student *all_students, int count_students, const char *path){
+
+	print_table(path);
+	printf("Enter the last name of the student whose information you want to edit: ");
+	
+	char surname[100];
+	scanf("%99s", surname);
+	
+	int index_edit = 0;
+
+	for (int i = 0; i < count_students; i++){
+	
+		if (strcmp(all_students[i].Surname, surname) == 0) {
+		
+			index_edit = i;
+			break;
+		
+		}
+	
+	}
+	
+	printf("Please indicate the field you want to change.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+	
+	int cmd = 0;
+	scanf("%d", &cmd);
+
+	printf("Enter a new value for the selected field: ");
+
+	switch(cmd){
+
+		case 1:
+
+			scanf("%99s", all_students[index_edit].Surname);
+			break;
+
+		case 2:
+
+			scanf("%d", &all_students[index_edit].RecordBookNum);
+			break;
+
+		case 3:
+			
+			scanf("%99s", all_students[index_edit].Faculty);
+			break;
+
+		case 4:
+			
+			scanf("%99s", all_students[index_edit].Group);
+			break;
+	
+	}
+
+	for(int i = 0; i < count_students; i++){
+
+                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+
+
+        }
 
 }
 
@@ -235,21 +297,34 @@ void choise(const char *path){
                                         free(all_students);
                                         break;
                                }
+
                         case 2:{
 
                                        print_table(path);
                                        break;
 
                                }
+
                         case 5:{
                                        
                                        int count_student = students(path);
                                        struct student *all_students = load(count_student, path);
+
                                        delete_student(all_students, count_student, path);
                                        break;
 
 
                                }
+
+			case 6:{
+			       
+				       int count_student = students(path);
+				       struct student *all_students = load(count_student, path);
+
+				       edit(all_students, count_student, path);
+				       break;
+			       
+			       }
                 }
 
                 printf("\nEnter your choise: ");
