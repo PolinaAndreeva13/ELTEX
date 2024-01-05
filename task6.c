@@ -25,47 +25,47 @@ int students(const char *path){
         int ch = 0;
 
         while((ch = fgetc(pfile)) != EOF) {
-
-                 //fscanf(pfile, "%*c");
-               if (ch == '\n') count_student++;
+		
+		if (ch == '\n') count_student++;
 
         }
 
         fclose(pfile);
-
         return count_student;
 
 }
 
 void save(struct student *save_student, int new_count, int flag, const char *path){
 
-        //FILE *pfile;
-
-/*	if(!pfile){
+	FILE *pfile = fopen(path, flag == 0 ? "a" : "w");
+    
+	if(!pfile) {
 	
 		perror("Error opened");
 		exit(1);
-
-	}*/
-        if (flag == 0){
-        
-		FILE *pfile;
-                pfile = fopen(path,"a");
-       		fprintf(pfile, "%s %d %s %s\n", save_student[new_count].Surname, save_student[new_count].RecordBookNum, save_student[new_count].Faculty, save_student[new_count].Group);
-
-       		fclose(pfile);        
 	
 	}
-        if (flag == 1){
 
-		FILE *pfile;
-                pfile = fopen(path, "w");
+	if(flag == 0){
+       		
 		fprintf(pfile, "%s %d %s %s\n", save_student[new_count].Surname, save_student[new_count].RecordBookNum, save_student[new_count].Faculty, save_student[new_count].Group);
-        
- 		fclose(pfile);
-        
+	
+	} else{
+	
+		int counter_help = 0;
+
+		while (counter_help < new_count){
+		
+			fprintf(pfile, "%s %d %s %s\n", save_student[counter_help].Surname, save_student[counter_help].RecordBookNum, save_student[counter_help].Faculty, save_student[counter_help].Group);
+
+			counter_help++;
+
+		}
+	
 	}
 
+
+       	fclose(pfile);
 
 }
 
@@ -81,14 +81,14 @@ struct student *load(int count_student, const char *path){
                 exit(1);
         }
 
-        if (count_student == 0) {
+        /*if (count_student == 0) {
 
                 fclose(pfile);
 
                 return all_students;
 
-        }
-        else {
+        }*/
+        if(count_student > 0) {
 
                 all_students = (struct student*)realloc(all_students, count_student * sizeof(struct student));
                 int counter_help = 0;
@@ -101,10 +101,13 @@ struct student *load(int count_student, const char *path){
     
                 }                
        
-                fclose(pfile);
+                //fclose(pfile);
 
-                return all_students;
+   		//return all_strudents;
         }
+
+	fclose(pfile);
+	return all_students;
 
 }
 
@@ -129,13 +132,6 @@ void add_student(int count_student, struct student *all_students, const char *pa
         save(new_student, count_student, 0, path);
 
         printf("The student has been successfully added");
-
-       /* for(int i = 0; i < count_student; i++){
-
-                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-
-
-        }*/
 
 }
 
@@ -162,6 +158,7 @@ void print_table(const char *path){
         fclose(pfile);
 
 }
+
 void delete_student(struct student *all_students, int count_student, const char* path){
 
         printf("Enter the last name of the student you want to remove from the table: ");
@@ -201,14 +198,8 @@ void delete_student(struct student *all_students, int count_student, const char*
 
 
         }*/
-
-	/*FILE *pfile = fopen(path, "w+");
-
-	fprintf(pfile, "%s %d %s %s\n", new_students[count_student-1].Surname, new_students[count_student-1].RecordBookNum, new_students[count_student-1].Faculty, new_students[count_student-1].Group);
-
-        fclose(pfile);*/
         
-//	save(new_students, count_student - 1, 1, path);
+	save(new_students, count_student - 1, 1, path);
 
         //printf("The deletion was completed successfully");
 
@@ -266,12 +257,13 @@ void edit(struct student *all_students, int count_students, const char *path){
 	
 	}
 
-	for(int i = 0; i < count_students; i++){
+	save(all_students, count_students, 1, path);
+
+	/*for(int i = 0; i < count_students; i++){
 
                 printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
 
-
-        }
+        }*/
 
 }
 
@@ -311,6 +303,8 @@ void choise(const char *path){
                                        struct student *all_students = load(count_student, path);
 
                                        delete_student(all_students, count_student, path);
+				       
+				       free(all_students);
                                        break;
 
 
@@ -322,6 +316,8 @@ void choise(const char *path){
 				       struct student *all_students = load(count_student, path);
 
 				       edit(all_students, count_student, path);
+
+				       free(all_students);
 				       break;
 			       
 			       }
