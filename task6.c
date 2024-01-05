@@ -287,12 +287,6 @@ void sort(struct student *all_students, int count_student, const char *path){
                         	}
 			}
 
-			 for(int i = 0; i < count_student; i++){
-
-                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-
-                        }
-
 			break;
 
 		case 2:		
@@ -310,13 +304,6 @@ void sort(struct student *all_students, int count_student, const char *path){
                                         }
                                 }
                         }
-
-			 for(int i = 0; i < count_student; i++){
-
-                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-
-                        }
-
 
 			break;
 
@@ -336,22 +323,31 @@ void sort(struct student *all_students, int count_student, const char *path){
                                 }
                         }
 
-                        for(int i = 0; i < count_student; i++){
-
-                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-
-                        }
-
 			break;
 
 		case 4:
 
+			for (int i = 0; i < count_student - 1; i++) {
+
+                                for (int j = 0; j < count_student - i - 1; j++) {
+
+                                        if (strcmp(all_students[j].Group, all_students[j + 1].Group) > 0) {
+
+                                                struct student temp = all_students[j];
+                                                all_students[j] = all_students[j + 1];
+                                                all_students[j + 1] = temp;
+
+                                        }
+                                }
+                        }
+
 			break;
 
 	}
-
-	//save(all_students, count_student, 1, path);
-
+	
+	save(all_students, count_student, 1, path);
+	printf("Sorting completed successfully!");
+	
 }
 
 void choise(const char *path){
