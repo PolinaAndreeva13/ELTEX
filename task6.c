@@ -279,9 +279,9 @@ void sort(struct student *all_students, int count_student, const char *path){
 
                                 	if (strcmp(all_students[j].Surname, all_students[j + 1].Surname) > 0) {
 
-                                        struct student temp = all_students[j];
-                                        all_students[j] = all_students[j + 1];
-                                        all_students[j + 1] = temp;
+                                        	struct student temp = all_students[j];
+                                        	all_students[j] = all_students[j + 1];
+                                        	all_students[j + 1] = temp;
 
                                 	}
                         	}
@@ -350,16 +350,183 @@ void sort(struct student *all_students, int count_student, const char *path){
 	
 }
 
+int min(int a, int b, int c) {
+    
+	int min = a;
+    
+	if (b < min) {
+        
+		min = b;
+    
+	}
+    
+	if (c < min) {
+        
+		min = c;
+    
+	}
+    return min;
+}
+
+int distance(char *str1, char *str2) {
+    
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+	int dp[len1 + 1][len2 + 1];
+	
+	for (int i = 0; i <= len1; i++) {
+        
+		for (int j = 0; j <= len2; j++) {
+            
+			if (i == 0) {
+                
+				dp[i][j] = j;
+            
+			} else if (j == 0) {
+                
+				dp[i][j] = i;
+            
+			} else {
+                
+				dp[i][j] = min(dp[i - 1][j - 1] + (str1[i - 1] == str2[j - 1] ? 0 : 1),
+                                dp[i][j - 1] + 1,
+                                dp[i - 1][j] + 1);
+            }
+        }
+    }
+
+    return dp[len1][len2];
+}
+
+void search(struct student *all_students, int count_student, const char *path){
+
+	printf("Select search field.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+
+	int cmd = 0, flag = 0;
+	scanf("%d", &cmd);
+
+	switch(cmd){
+
+		case 1:
+			
+			char surname[100];
+			printf("Enter surname: ");
+			scanf("%99s\n", surname);
+				
+			for (int i = 0; i < count_student; i++){
+					
+				if (distance(all_students[i].Surname, surname) < 3) {
+
+					printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+					printf("\n");
+					flag = 1;
+
+				}
+
+			}
+
+			if (flag == 0){
+
+				printf("No such data.");
+
+			}
+
+			break;
+
+		case 2:
+
+			int number;
+			printf("Enter record book number: ");
+			scanf("%d\n", &number);
+
+			for (int i = 0; i < count_student; i++){
+				
+				if (all_students[i].RecordBookNum == number){
+				
+                                        printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+					flag = 1;
+
+					break;
+
+                                }
+
+                        }
+
+                        if (flag == 0){
+
+                                printf("No such data.");
+
+                        }
+
+			break;
+
+		case 3:
+
+			char faculty[100];
+                        printf("Enter faculty: ");
+                        scanf("%99s\n", faculty);
+
+                        for (int i = 0; i < count_student; i++){
+
+                                if (distance(all_students[i].Faculty, faculty) < 3) {
+
+                                        printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+    					printf("\n");
+					flag = 1;
+
+                                }
+
+                        }
+
+                        if (flag == 0){
+
+                                printf("No such data.");
+
+                        }
+
+			break;
+
+		case 4:
+
+			char group[100];
+                        printf("Enter group: ");
+                        scanf("%99s\n", group);
+
+                        for (int i = 0; i < count_student; i++){
+
+                                if (distance(all_students[i].Group, group) < 3) {
+
+                                        
+					printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+                                        printf("\n");
+					flag = 1;
+
+                                }
+
+                        }
+
+                        if (flag == 0){
+
+                                printf("No such data.");
+
+                        }
+
+			break;
+
+	}
+
+}
+
 void choise(const char *path){
 
 
-        printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)\n8)Exit.\n");
+        printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)Exit.\n");
 
         int cmd = 0;
         printf("Enter your choise:");
         scanf("%d", &cmd);
 
-        while(cmd != 8){
+        while(cmd != 7){
 
                 switch(cmd){
 
@@ -388,6 +555,15 @@ void choise(const char *path){
 					break;
 				
 				}
+
+			case 4:{
+			       
+					int count_student = students(path);
+					struct student *all_students = load(count_student, path);
+					search(all_students, count_student, path);
+					free(all_students);
+					break;
+			       }
 
                         case 5:{
                                        
