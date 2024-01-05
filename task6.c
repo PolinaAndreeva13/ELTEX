@@ -201,7 +201,7 @@ void delete_student(struct student *all_students, int count_student, const char*
         
 	save(new_students, count_student - 1, 1, path);
 
-        //printf("The deletion was completed successfully");
+        printf("The deletion was completed successfully");
 
 }
 
@@ -259,11 +259,98 @@ void edit(struct student *all_students, int count_students, const char *path){
 
 	save(all_students, count_students, 1, path);
 
-	/*for(int i = 0; i < count_students; i++){
+}
 
-                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+void sort(struct student *all_students, int count_student, const char *path){
+	
+	printf("Select a field to sort.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
 
-        }*/
+	struct student *sort_stud = NULL;
+	int cmd = 0;
+	scanf("%d", &cmd);
+
+	switch(cmd){
+
+		case 1:
+
+		  	for (int i = 0; i < count_student - 1; i++) {
+
+                		for (int j = 0; j < count_student - i - 1; j++) {
+
+                                	if (strcmp(all_students[j].Surname, all_students[j + 1].Surname) > 0) {
+
+                                        struct student temp = all_students[j];
+                                        all_students[j] = all_students[j + 1];
+                                        all_students[j + 1] = temp;
+
+                                	}
+                        	}
+			}
+
+			 for(int i = 0; i < count_student; i++){
+
+                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+
+                        }
+
+			break;
+
+		case 2:		
+			
+			for (int i = 0; i < count_student - 1; i++) {
+
+                                for (int j = 0; j < count_student - i - 1; j++) {
+
+                                        if (all_students[j].RecordBookNum > all_students[j + 1].RecordBookNum) {
+
+                                        	struct student temp = all_students[j];
+                                        	all_students[j] = all_students[j + 1];
+                                        	all_students[j + 1] = temp;
+
+                                        }
+                                }
+                        }
+
+			 for(int i = 0; i < count_student; i++){
+
+                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+
+                        }
+
+
+			break;
+
+		case 3:
+
+			for (int i = 0; i < count_student - 1; i++) {
+
+                                for (int j = 0; j < count_student - i - 1; j++) {
+
+                                        if (strcmp(all_students[j].Faculty, all_students[j + 1].Faculty) > 0) {
+
+                                        	struct student temp = all_students[j];
+                                        	all_students[j] = all_students[j + 1];
+                                        	all_students[j + 1] = temp;
+
+                                        }
+                                }
+                        }
+
+                        for(int i = 0; i < count_student; i++){
+
+                                printf("Surnmae:%s\nRecord Book Number:%d\nFaculty:%s\nGroup:%s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+
+                        }
+
+			break;
+
+		case 4:
+
+			break;
+
+	}
+
+	//save(all_students, count_student, 1, path);
 
 }
 
@@ -285,7 +372,6 @@ void choise(const char *path){
                                         int count_student = students(path);
                                         struct student *all_students = load(count_student, path);
                                         add_student(count_student, all_students, path);
-
                                         free(all_students);
                                         break;
                                }
@@ -297,13 +383,21 @@ void choise(const char *path){
 
                                }
 
+			case 3:{
+
+					int count_student = students(path);
+					struct student *all_students = load(count_student, path);
+					sort(all_students, count_student, path);
+					free(all_students);
+					break;
+				
+				}
+
                         case 5:{
                                        
                                        int count_student = students(path);
                                        struct student *all_students = load(count_student, path);
-
                                        delete_student(all_students, count_student, path);
-				       
 				       free(all_students);
                                        break;
 
@@ -314,9 +408,7 @@ void choise(const char *path){
 			       
 				       int count_student = students(path);
 				       struct student *all_students = load(count_student, path);
-
 				       edit(all_students, count_student, path);
-
 				       free(all_students);
 				       break;
 			       
