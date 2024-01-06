@@ -16,15 +16,15 @@ int students(const char *path){
         int count_student = 0;
         FILE *pfile = fopen(path, "r");
 
-        if(!pfile){
+        if (!pfile){
 
-                perror("Error opened");
+                perror("\nError opened");
                 exit(1);
         }
 
         int ch = 0;
 
-        while((ch = fgetc(pfile)) != EOF) {
+        while ((ch = fgetc(pfile)) != EOF) {
 		
 		if (ch == '\n') count_student++;
 
@@ -39,18 +39,18 @@ void save(struct student *save_student, int new_count, int flag, const char *pat
 
 	FILE *pfile = fopen(path, flag == 0 ? "a" : "w");
     
-	if(!pfile) {
+	if (!pfile) {
 	
-		perror("Error opened");
+		perror("\nError opened");
 		exit(1);
 	
 	}
 
-	if(flag == 0){
+	if (flag == 0){
        		
 		fprintf(pfile, "%s %d %s %s\n", save_student[new_count].Surname, save_student[new_count].RecordBookNum, save_student[new_count].Faculty, save_student[new_count].Group);
 	
-	} else{
+	} else {
 	
 		int counter_help = 0;
 
@@ -75,25 +75,17 @@ struct student *load(int count_student, const char *path){
         struct student *all_students = NULL;
         FILE *pfile = fopen(path, "r");
 
-        if(!pfile){
+        if (!pfile){
 
-                perror("Error opened");
+                perror("\nError opened.\n");
                 exit(1);
         }
-
-        /*if (count_student == 0) {
-
-                fclose(pfile);
-
-                return all_students;
-
-        }*/
-        if(count_student > 0) {
+        if (count_student > 0){
 
                 all_students = (struct student*)realloc(all_students, count_student * sizeof(struct student));
                 int counter_help = 0;
 
-                while(counter_help < count_student){
+                while (counter_help < count_student){
         
                         fscanf(pfile, "%99s%d%99s%99s", all_students[counter_help].Surname, &all_students[counter_help].RecordBookNum, all_students[counter_help].Faculty, all_students[counter_help].Group);
         
@@ -101,9 +93,6 @@ struct student *load(int count_student, const char *path){
     
                 }                
        
-                //fclose(pfile);
-
-   		//return all_strudents;
         }
 
 	fclose(pfile);
@@ -120,8 +109,22 @@ void add_student(int count_student, struct student *all_students, const char *pa
 
         printf("Please enter the following information:\nSurname: ");
         scanf("%99s", new_student->Surname);
-        printf("Record Book Number: ");
-        scanf("%d", &new_student->RecordBookNum);
+        
+	printf("Record Book Number: ");
+	int num = 0;
+	int flag = scanf("%d", &num);
+	if (flag == 0) {
+	
+		printf("You can only enter numbers.\nDefault value is 0.\n");
+		new_student->RecordBookNum = 0;
+		while (getchar() != '\n');
+
+	} else {
+
+		new_student->RecordBookNum = num;
+	
+	}	
+
         printf("Faculty: ");
         scanf("%99s", new_student->Faculty);
         printf("Group: ");
@@ -131,7 +134,7 @@ void add_student(int count_student, struct student *all_students, const char *pa
 
         save(new_student, count_student, 0, path);
 
-        printf("The student has been successfully added");
+        printf("\nThe student has been successfully added!\n");
 
 }
 
@@ -140,7 +143,7 @@ void print_table(const char *path){
         FILE *pfile = fopen(path, "r");
 
         if (!pfile) {
-                perror("Error opened");
+                perror("\nError opened");
                 return;
         }
 
@@ -161,14 +164,13 @@ void print_table(const char *path){
 
 void delete_student(struct student *all_students, int count_student, const char* path){
 
-        printf("Enter the last name of the student you want to remove from the table: ");
+        printf("\nEnter the last name of the student you want to remove from the table: ");
         char surname[100];
         scanf("%99s", surname);
 
-        int index_del = 0;
-	printf("%d", count_student);
+        int index_del = -1;
 
-        for(int i = 0; i < count_student; i++){
+        for (int i = 0; i < count_student; i++){
 
                 if (strcmp(all_students[i].Surname, surname) == 0){
 			
@@ -178,19 +180,21 @@ void delete_student(struct student *all_students, int count_student, const char*
 
         }
 
-        for(int i = index_del; i < count_student; i++){
+	if (index_del != -1){
+        	
+		for (int i = index_del; i < count_student; i++){
 			
-		all_students[i] = all_students[i + 1];
+			all_students[i] = all_students[i + 1];
 
-        }
+        	}
 	
-	struct student *new_students = (struct student*)realloc(all_students, (count_student - 1) * sizeof(struct stuent*));
+		struct student *new_students = (struct student*)realloc(all_students, (count_student - 1) * sizeof(struct stuent*));
 
-	for (int i = 0; i < count_student - 1; i++){
+		for (int i = 0; i < count_student - 1; i++){
 	
-		new_students[i] = all_students[i];
+			new_students[i] = all_students[i];
 
-	}
+		}
 
         /*for(int i = 0; i < count_student - 1; i++){
 
@@ -199,16 +203,22 @@ void delete_student(struct student *all_students, int count_student, const char*
 
         }*/
         
-	save(new_students, count_student - 1, 1, path);
+		save(new_students, count_student - 1, 1, path);
 
-        printf("The deletion was completed successfully");
+       		printf("\nThe deletion was completed successfully!\n");
+	
+	} else { 
+	
+		printf("\nSuch a person does not exist.\n");
+	
+	}
 
 } 
 
 void edit(struct student *all_students, int count_students, const char *path){
 
 	print_table(path);
-	printf("Enter the last name of the student whose information you want to edit: ");
+	printf("\nEnter the last name of the student whose information you want to edit: ");
 	
 	char surname[100];
 	scanf("%99s", surname);
@@ -228,57 +238,69 @@ void edit(struct student *all_students, int count_students, const char *path){
 	
 	if (index_edit != -1){
 	
-		printf("Please indicate the field you want to change.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+		printf("\nPlease indicate the field you want to change.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
 	
-		int cmd = 0, test = 1;
-		scanf("%d", &cmd);
-
-		printf("Enter a new value for the selected field: ");
+		int cmd = 0, test = 1, flag = 0;;
+		flag = scanf("%d", &cmd);
 		
-		switch(cmd){
+		if (flag == 1){
+	
+			printf("\nEnter a new value for the selected filed: ");
 
-			case 1:
+			switch (cmd){
 
-				scanf("%99s", all_students[index_edit].Surname);
-				break;
+				case 1:
 
-			case 2:
+					scanf("%99s", all_students[index_edit].Surname);
+					break;
+
+				case 2:
 				
-				int num = 0;
-				test = scanf("%d", &num);
+					int num = 0;
+					test = scanf("%d", &num);
 
-				if (test == 0) {
+					if (test == 0) {
 			
-					printf("You can only enter whole numbers!\n");
+						printf("\nYou can only enter whole numbers.\n");
+						while (getchar() != '\n');
 
-				} else {
+				
+					} else {
 					
-					all_students[index_edit].RecordBookNum = num;
+						all_students[index_edit].RecordBookNum = num;
 
-				}
-				break;
+					}
+					
+					break;
 
-			case 3:
+				case 3:
 			
-				scanf("%99s", all_students[index_edit].Faculty);
-				break;
+					scanf("%99s", all_students[index_edit].Faculty);
+					break;
 
-			case 4:
+				case 4:
 			
-				scanf("%99s", all_students[index_edit].Group);
-				break;
+					scanf("%99s", all_students[index_edit].Group);
+					break;
 
-			default:
+				default:
 
-				printf("No such option!\n");
+					printf("\nNo such option.\n");
 	
-		}
+			}
 		
-		if (test == 1) save(all_students, count_students, 1, path);
+			if (test == 1) save(all_students, count_students, 1, path);
+
+		} else { 
+		
+			printf("\nIncorrect data.\n");
+			while (getchar() != '\n');
+
+		}
 	
 	} else {
 	
-		printf("Such a person does not exist!\n");
+		printf("\nSuch a person does not exist.\n");
 	
 	}
 
@@ -286,89 +308,102 @@ void edit(struct student *all_students, int count_students, const char *path){
 
 void sort(struct student *all_students, int count_student, const char *path){
 	
-	printf("Select a field to sort.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+	printf("\nSelect a field to sort.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
 
 	int cmd = 0;
-	scanf("%d", &cmd);
+	int flag = scanf("%d", &cmd);
 
-	switch(cmd){
+	if (flag == 1){
+	
+		switch(cmd){
 
-		case 1:
+			case 1:
 
-		  	for (int i = 0; i < count_student - 1; i++) {
+		  		for (int i = 0; i < count_student - 1; i++) {
 
-                		for (int j = 0; j < count_student - i - 1; j++) {
+                			for (int j = 0; j < count_student - i - 1; j++) {
 
-                                	if (strcmp(all_students[j].Surname, all_students[j + 1].Surname) > 0) {
+                                		if (strcmp(all_students[j].Surname, all_students[j + 1].Surname) > 0) {
 
-                                        	struct student temp = all_students[j];
-                                        	all_students[j] = all_students[j + 1];
-                                        	all_students[j + 1] = temp;
+                                        		struct student temp = all_students[j];
+                                        		all_students[j] = all_students[j + 1];
+                                        		all_students[j + 1] = temp;
 
+                                		}
+                        		}
+				}
+
+				break;
+
+			case 2:		
+			
+				for (int i = 0; i < count_student - 1; i++) {
+
+                                	for (int j = 0; j < count_student - i - 1; j++) {
+
+                                        	if (all_students[j].RecordBookNum > all_students[j + 1].RecordBookNum) {
+
+                                        		struct student temp = all_students[j];
+                                        		all_students[j] = all_students[j + 1];
+                                        		all_students[j + 1] = temp;
+
+                                        	}
                                 	}
                         	}
-			}
 
-			break;
+				break;
 
-		case 2:		
-			
-			for (int i = 0; i < count_student - 1; i++) {
+			case 3:
 
-                                for (int j = 0; j < count_student - i - 1; j++) {
+				for (int i = 0; i < count_student - 1; i++) {
 
-                                        if (all_students[j].RecordBookNum > all_students[j + 1].RecordBookNum) {
+                                	for (int j = 0; j < count_student - i - 1; j++) {
 
-                                        	struct student temp = all_students[j];
-                                        	all_students[j] = all_students[j + 1];
-                                        	all_students[j + 1] = temp;
+                                        	if (strcmp(all_students[j].Faculty, all_students[j + 1].Faculty) > 0) {
 
-                                        }
-                                }
-                        }
+                                        		struct student temp = all_students[j];
+                                        		all_students[j] = all_students[j + 1];
+                                        		all_students[j + 1] = temp;
 
-			break;
+                                        	}
+                                	}
+                        	}
 
-		case 3:
+				break;
 
-			for (int i = 0; i < count_student - 1; i++) {
+			case 4:
 
-                                for (int j = 0; j < count_student - i - 1; j++) {
+				for (int i = 0; i < count_student - 1; i++) {
 
-                                        if (strcmp(all_students[j].Faculty, all_students[j + 1].Faculty) > 0) {
+                                	for (int j = 0; j < count_student - i - 1; j++) {
 
-                                        	struct student temp = all_students[j];
-                                        	all_students[j] = all_students[j + 1];
-                                        	all_students[j + 1] = temp;
+                                        	if (strcmp(all_students[j].Group, all_students[j + 1].Group) > 0) {
 
-                                        }
-                                }
-                        }
+                                                	struct student temp = all_students[j];
+                                                	all_students[j] = all_students[j + 1];
+                                                	all_students[j + 1] = temp;
 
-			break;
+                                        	}
+                                	}
+                        	}
 
-		case 4:
+				break;
 
-			for (int i = 0; i < count_student - 1; i++) {
+			default:
 
-                                for (int j = 0; j < count_student - i - 1; j++) {
+				printf("There is no such option!");
+				break;
 
-                                        if (strcmp(all_students[j].Group, all_students[j + 1].Group) > 0) {
+		}
+	
+		save(all_students, count_student, 1, path);
+		printf("\nSorting completed successfully!\n");
 
-                                                struct student temp = all_students[j];
-                                                all_students[j] = all_students[j + 1];
-                                                all_students[j + 1] = temp;
+	} else {
 
-                                        }
-                                }
-                        }
-
-			break;
+		while (getchar() != '\n');
 
 	}
-	
-	save(all_students, count_student, 1, path);
-	printf("Sorting completed successfully!");
 	
 }
 
@@ -424,119 +459,117 @@ int distance(char *str1, char *str2) {
 
 void search(struct student *all_students, int count_student, const char *path){
 
-	printf("Select search field.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+	printf("\nSelect search field.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
 
 	int cmd = 0, flag = 0;
-	scanf("%d", &cmd);
+	int cmd_flag = scanf("%d", &cmd);
 
-	switch(cmd){
+	if (cmd_flag == 1) {
+		
+		switch(cmd){
 
-		case 1:
+			case 1:
 			
-			char surname[100];
-			printf("Enter surname: ");
-			scanf("%99s\n", surname);
+				char surname[100];
+				printf("\nEnter surname: ");
+				scanf("%99s", surname);
 				
-			for (int i = 0; i < count_student; i++){
+				for (int i = 0; i < count_student; i++){
 					
-				if (distance(all_students[i].Surname, surname) < 3) {
+					if (distance(all_students[i].Surname, surname) < 3) {
 
-					printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-					printf("\n");
-					flag = 1;
+						printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+						printf("\n");
+						flag = 1;
+
+					}
 
 				}
+				break;
 
-			}
+			case 2:
 
-			if (flag == 0){
+				int number;
+				printf("\nEnter record book number: ");
+				int test = scanf("%d", &number);
 
-				printf("No such data.");
-
-			}
-
-			break;
-
-		case 2:
-
-			int number;
-			printf("Enter record book number: ");
-			scanf("%d\n", &number);
-
-			for (int i = 0; i < count_student; i++){
+				if (test == 1) {
+					
+					for (int i = 0; i < count_student; i++){
 				
-				if (all_students[i].RecordBookNum == number){
+						if (all_students[i].RecordBookNum == number){
 				
-                                        printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-					flag = 1;
+                                        		printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+							flag = 1;
+							break;
 
-					break;
+                                		}
 
-                                }
+                        		}
+				
+				} else {
 
-                        }
+					while (getchar() != '\n');
 
-                        if (flag == 0){
+				}
+				break;
 
-                                printf("No such data.");
+			case 3:
 
-                        }
+				char faculty[100];
+                        	printf("\nEnter faculty: ");
+                        	scanf("%99s", faculty);
 
-			break;
+                        	for (int i = 0; i < count_student; i++){
 
-		case 3:
+                                	if (distance(all_students[i].Faculty, faculty) < 3) {
 
-			char faculty[100];
-                        printf("Enter faculty: ");
-                        scanf("%99s\n", faculty);
+                                        	printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+    						printf("\n");
+						flag = 1;
 
-                        for (int i = 0; i < count_student; i++){
+                                	}
 
-                                if (distance(all_students[i].Faculty, faculty) < 3) {
+                        	}
+				break;
 
-                                        printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-    					printf("\n");
-					flag = 1;
+			case 4:
 
-                                }
+				char group[100];
+                        	printf("\nEnter group: ");
+                        	scanf("%99s", group);
 
-                        }
+                        	for (int i = 0; i < count_student; i++){
 
-                        if (flag == 0){
-
-                                printf("No such data.");
-
-                        }
-
-			break;
-
-		case 4:
-
-			char group[100];
-                        printf("Enter group: ");
-                        scanf("%99s\n", group);
-
-                        for (int i = 0; i < count_student; i++){
-
-                                if (distance(all_students[i].Group, group) < 3) {
-
+                                	if (distance(all_students[i].Group, group) < 3) {
                                         
-					printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
-                                        printf("\n");
-					flag = 1;
+						printf("Surnmae: %s\nRecord Book Number: %d\nFaculty: %s\nGroup: %s\n", all_students[i].Surname, all_students[i].RecordBookNum, all_students[i].Faculty, all_students[i].Group);
+                                        	printf("\n");
+						flag = 1;
 
-                                }
+                                	}
 
-                        }
+                        	}
+				break;
+		
+			default:
+			
+				printf("There is no such option!");
+				break;
 
-                        if (flag == 0){
+		}
+		
+		if (flag == 0) {
 
-                                printf("No such data.");
+			printf("\nNo such data.\n");
 
-                        }
+		}
 
-			break;
 
+	} else { 
+	
+		while (getchar() != '\n');
+	
 	}
 
 }
@@ -544,16 +577,16 @@ void search(struct student *all_students, int count_student, const char *path){
 void choise(const char *path){
 
 
-        printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)Exit.\n");
+        printf("Please select an action.\n(1)Writing to a table;\n(2)View table;\n(3)Sort the table in ascending order by a given field;\n(4)Search for an element in the table;\n(5)Delete entry;\n(6)Edit entry;\n(7)Exit.\n");
 
         int cmd = 0;
-        printf("Enter your choise: ");
+        printf("\nEnter your choise: ");
         int flag = scanf("%d", &cmd);
         
 
-	while(cmd != 7 && flag != 0){
+	while (cmd != 7 && flag != 0){
 
-                switch(cmd){
+                switch (cmd){
 
                         case 1:{
 
@@ -607,11 +640,13 @@ void choise(const char *path){
 				       	break;
 			       
 				}
-
-			default: {printf("There is no such option!"); break;}
+			default: {
+					 printf("\nThere is no such option!\n"); 
+					 break;
+				 }
                 	
 		}
-			printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)Exit.\n");
+			printf("\nPlease select an action:\n(1)Writing to a table;\n(2)View table;\n(3)Sort the table in ascending order by a given field;\n(4)Search for an element in the table;\n(5)Delete entry;\n(6)Edit entry;\n(7)Exit.\n");
                 	printf("\nEnter your choise: ");
                 	flag = scanf("%d", &cmd);
 	
