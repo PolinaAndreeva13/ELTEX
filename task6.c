@@ -203,7 +203,7 @@ void delete_student(struct student *all_students, int count_student, const char*
 
         printf("The deletion was completed successfully");
 
-}
+} 
 
 void edit(struct student *all_students, int count_students, const char *path){
 
@@ -213,7 +213,7 @@ void edit(struct student *all_students, int count_students, const char *path){
 	char surname[100];
 	scanf("%99s", surname);
 	
-	int index_edit = 0;
+	int index_edit = -1;
 
 	for (int i = 0; i < count_students; i++){
 	
@@ -226,38 +226,61 @@ void edit(struct student *all_students, int count_students, const char *path){
 	
 	}
 	
-	printf("Please indicate the field you want to change.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+	if (index_edit != -1){
 	
-	int cmd = 0;
-	scanf("%d", &cmd);
+		printf("Please indicate the field you want to change.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
+	
+		int cmd = 0, test = 1;
+		scanf("%d", &cmd);
 
-	printf("Enter a new value for the selected field: ");
+		printf("Enter a new value for the selected field: ");
+		
+		switch(cmd){
 
-	switch(cmd){
+			case 1:
 
-		case 1:
+				scanf("%99s", all_students[index_edit].Surname);
+				break;
 
-			scanf("%99s", all_students[index_edit].Surname);
-			break;
+			case 2:
+				
+				int num = 0;
+				test = scanf("%d", &num);
 
-		case 2:
-
-			scanf("%d", &all_students[index_edit].RecordBookNum);
-			break;
-
-		case 3:
+				if (test == 0) {
 			
-			scanf("%99s", all_students[index_edit].Faculty);
-			break;
+					printf("You can only enter whole numbers!\n");
 
-		case 4:
+				} else {
+					
+					all_students[index_edit].RecordBookNum = num;
+
+				}
+				break;
+
+			case 3:
 			
-			scanf("%99s", all_students[index_edit].Group);
-			break;
+				scanf("%99s", all_students[index_edit].Faculty);
+				break;
+
+			case 4:
+			
+				scanf("%99s", all_students[index_edit].Group);
+				break;
+
+			default:
+
+				printf("No such option!\n");
+	
+		}
+		
+		if (test == 1) save(all_students, count_students, 1, path);
+	
+	} else {
+	
+		printf("Such a person does not exist!\n");
 	
 	}
-
-	save(all_students, count_students, 1, path);
 
 }
 
@@ -265,7 +288,6 @@ void sort(struct student *all_students, int count_student, const char *path){
 	
 	printf("Select a field to sort.\n(1)Surname\n(2)Record book number\n(3)Faculty\n(4)Group\nYour choise: ");
 
-	struct student *sort_stud = NULL;
 	int cmd = 0;
 	scanf("%d", &cmd);
 
@@ -351,7 +373,7 @@ void sort(struct student *all_students, int count_student, const char *path){
 }
 
 int min(int a, int b, int c) {
-    
+	
 	int min = a;
     
 	if (b < min) {
@@ -365,7 +387,9 @@ int min(int a, int b, int c) {
 		min = c;
     
 	}
-    return min;
+    
+	return min;
+
 }
 
 int distance(char *str1, char *str2) {
@@ -523,29 +547,29 @@ void choise(const char *path){
         printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)Exit.\n");
 
         int cmd = 0;
-        printf("Enter your choise:");
-        scanf("%d", &cmd);
+        printf("Enter your choise: ");
+        int flag = scanf("%d", &cmd);
+        
 
-        while(cmd != 7){
+	while(cmd != 7 && flag != 0){
 
                 switch(cmd){
 
                         case 1:{
 
                                         int count_student = students(path);
-                                        struct student *all_students = load(count_student, path);
+                      		        struct student *all_students = load(count_student, path);
                                         add_student(count_student, all_students, path);
                                         free(all_students);
                                         break;
-                               }
-
+				       
+			       }
                         case 2:{
 
-                                       print_table(path);
-                                       break;
-
-                               }
-
+                                       	print_table(path);
+                                       	break;
+				       
+				}
 			case 3:{
 
 					int count_student = students(path);
@@ -555,7 +579,6 @@ void choise(const char *path){
 					break;
 				
 				}
-
 			case 4:{
 			       
 					int count_student = students(path);
@@ -563,34 +586,36 @@ void choise(const char *path){
 					search(all_students, count_student, path);
 					free(all_students);
 					break;
+
 			       }
-
-                        case 5:{
+			case 5:{
                                        
-                                       int count_student = students(path);
-                                       struct student *all_students = load(count_student, path);
-                                       delete_student(all_students, count_student, path);
-				       free(all_students);
-                                       break;
+                                       	int count_student = students(path);
+                                       	struct student *all_students = load(count_student, path);
+                                       	delete_student(all_students, count_student, path);
+				       	free(all_students);
+                                       	break;
 
 
-                               }
-
+			       }
 			case 6:{
 			       
-				       int count_student = students(path);
-				       struct student *all_students = load(count_student, path);
-				       edit(all_students, count_student, path);
-				       free(all_students);
-				       break;
+				       	int count_student = students(path);
+				       	struct student *all_students = load(count_student, path);
+				       	edit(all_students, count_student, path);
+				       	free(all_students);
+				       	break;
 			       
-			       }
-                }
+				}
 
-                printf("\nEnter your choise: ");
-                scanf("%d", &cmd);
-        }
-
+			default: {printf("There is no such option!"); break;}
+                	
+		}
+			printf("Please select an action:\n1)Writing to a table;\n2)View table;\n3)Sort the table in ascending order by a given field;\n4)Search for an element in the table;\n5)Delete entry;\n6)Edit entry;\n7)Exit.\n");
+                	printf("\nEnter your choise: ");
+                	flag = scanf("%d", &cmd);
+	
+	}
 
 }
 
