@@ -58,7 +58,12 @@ int main(int argc, char *argv[]){
 
 		while((size = read(0, buf, BUFSIZ)) > 0) {
 	
-			write(fd, &buf, size);
+			if (write(fd, &buf, size) != size){
+			
+				perror("FATAL");
+				exit(1);
+
+			}
 
 		}
 
