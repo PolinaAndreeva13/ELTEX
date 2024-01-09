@@ -9,43 +9,17 @@
 
 int main(int argc, char *argv[]){
 
-	if (argc != 3) {
+	if (argc != 2) {
 	
-		perror("Command operation: <command> <mode> <file_name>\nmode: 1 - read; 2 - write\n");
+		perror("Command operation: <command> <file_name>\n");
 		exit(1);
 
 	}
 
 	char buf[BUFSIZ];
-	size_t size;
-	
-	if (strcmp(argv[1], "1") == 0){
+	size_t size;	
 
-		int fd = open(argv[2], O_RDONLY, PERMS);
-
-		if (fd == -1) {
-
-			perror("Error opened");
-			exit(1);
-
-		}
-	
-		while ((size = read(fd, buf, BUFSIZ)) > 0){
-	
-			if (write(1, &buf, size) != size){
-		
-				perror("FATAL");
-				exit(1);
-		
-			}	
-	
-		}
-
-		close(fd);
-
-	}
-
-	if (strcmp(argv[1], "2") == 0) {
+	/*if (argc == 3){
 		
 		int fd = creat(argv[2], PERMS);
 
@@ -69,7 +43,30 @@ int main(int argc, char *argv[]){
 
 		close(fd);
 
-	}
+	} else {*/
+	
+		int fd = open(argv[1], O_RDONLY, PERMS);
 
+		if (fd == -1) {
+
+			perror("Error opened");
+			exit(1);
+
+		}
+
+		while ((size = read(fd, buf, BUFSIZ)) > 0){
+
+			if (write(1, &buf, size) != size){
+
+				perror("FATAL");
+				exit(1);
+
+			}
+
+		}
+
+		close(fd);
+	
+//	} 
+	
 }
-
