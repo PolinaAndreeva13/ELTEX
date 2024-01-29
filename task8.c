@@ -7,7 +7,10 @@
 
 int del_shm(){
 
-        char pathname[] = "sys1.c";
+        char pathname[100];
+	printf("Enter pathanme: ");
+	scanf("%99s", pathname);
+
         key_t key;
         int shmid;
 
@@ -51,7 +54,8 @@ int del_shm(){
 
 int main(){
 
-	del_shm();	
+	del_shm();
+	printf("Delete shared memory\n");	
 
 }
 
