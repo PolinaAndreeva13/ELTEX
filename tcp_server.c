@@ -7,10 +7,11 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
-void main() {
+
+int main() {
     
 	int sockfd, newsockfd;
-    	int clilen;
+    	socklen_t clilen;
     	int n;
     	char line[1000];
     	struct sockaddr_in servaddr, cliaddr;
@@ -99,5 +100,6 @@ void main() {
         	close(newsockfd);
     
 	}
-
+	
+	return 1;
 }
